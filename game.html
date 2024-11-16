@@ -1,1 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Memory Training Game</title>
+    <style>
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
+        }
+        #game-container {
+            width: 100%;
+            max-width: 800px;
+            text-align: center;
+        }
+        h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        #rules {
+            font-size: 1rem;
+            margin-bottom: 2rem;
+        }
+        #start-button, #submit-button {
+            padding: 10px 20px;
+            font-size: 1.2rem;
+            color: #fff;
+            background-color: #4CAF50;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        #start-button:hover, #submit-button:hover {
+            background-color: #45a049;
+        }
+        #game-board {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+        }
+        #score-tracker {
+            display: flex;
+            margin-bottom: 1rem;
+        }
+        .score-box {
+            width: 20px;
+            height: 20px;
+            margin: 0 2px;
+            background-color: #ddd;
+            border: 1px solid #aaa;
+        }
+        .score-box.correct {
+            background-color: #4CAF50;
+        }
+        .score-box.incorrect {
+            background-color: #f44336;
+        }
+        #sequence {
+            font-size: 2rem;
+            margin: 1rem 0;
+        }
+        #input-container {
+            display: none;
+            flex-direction: column;
+            align-items: center;
+        }
+        #user-input {
+            padding: 10px;
+            font-size: 1.2rem;
+            width: 100%;
+            max-width: 300px;
+            text-align: center;
+            margin-bottom: 1rem;
+        }
+        #final-score {
+            display: none;
+            font-size: 1.5rem;
+            margin-top: 2rem;
+        }
+    </style>
+</head>
+<body>
+    <div id="game-container">
+        <h1>Memory Training Game</h1>
+        <div id="rules">
+            <p>Welcome to the Memory Training Game! You'll see a number sequence for 5 seconds.</p>
+            <p>Your task: memorize the number and input it correctly after the countdown ends.</p>
+            <p>Complete 20 levels and aim for the highest score!</p>
+        </div>
+        <button id="start-button">Start Game</button>
+
+        <div id="game-board">
+            <div id="score-tracker">
+                <!-- 20 boxes for levels -->
+                <div class="score-box"></div>
+                <div class="score-box"></div>
+                <div class="score-box"></div>
+                <div class="score-box"></div>
+                <div class="score-box"></div>
+                <div class="score-box"></div>
+                <div class="score-box"></div>
+                <div class="score-box"></div>
+                <div class="score-box"></div>
+                <div class="score-box"></div>
+                <div class="score-box"></div>
+                <div class="score-box"></div>
+                <div class="score-box"></div>
+                <div class="score-box"></div>
+                <div class="score-box"></div>
+                <div class="score-box"></div>
+                <div class="score-box"></div>
+                <div class="score-box"></div>
+                <div class="score-box"></div>
+            </div>
+            <div id="sequence"></div>
+            <div id="input-container">
+                <input type="text" id="user-input" placeholder="Enter the sequence">
+                <button id="submit-button">Submit</button>
+            </div>
+        </div>
+
+        <div id="final-score"></div>
+    </div>
+
+    <script>
+        const startButton = document.getElementById("start-button");
+        const gameBoard = document.getElementById("game-board");
+        const sequenceDisplay = document.getElementById("sequence");
+        const inputContainer = document.getElementById("input-container");
+        const userInput = document.getElementById("user-input");
+        const submitButton = document.getElementById("submit-button");
+        const scoreTracker = document.getElementById("score-tracker").children;
+        const finalScore = document.getElementById("final-score");
+
+        let currentLevel = 0;
+        let totalScore = 0;
+        let currentSequence = "";
+
+        startButton.addEventListener("click", () => {
+            startButton.style.display = "none";
+            gameBoard.style.display = "flex";
+            nextLevel();
+        });
+
+        function nextLevel() {
+            if (currentLevel === 20) {
+                endGame();
+                return;
+            }
+            currentLevel++;
+            generateSequence(currentLevel);
+            displaySequence();
+        }
+
+        function generateSequence(length) {
+            currentSequence = "";
+            for (let i = 0; i < length; i++) {
+                currentSequence += Math.floor(Math.random() * 10);
+            }
+        }
+
+        function displaySequence() {
+            sequenceDisplay.textContent = currentSequence;
+            userInput.value = "";
+            inputContainer.style.display = "none";
+            setTimeout(() => {
+                sequenceDisplay.textContent = "";
+                inputContainer.style.display = "flex";
+            }, 5000);
+        }
+
+        submitButton.addEventListener("click", () => {
+            const userAnswer = userInput.value;
+            const isCorrect = userAnswer === currentSequence;
+            scoreTracker[currentLevel - 1].classList.add(isCorrect ? "correct" : "incorrect");
+            if (isCorrect) {
+                totalScore += currentLevel * 5;
+            }
+            nextLevel();
+        });
+
+        function endGame() {
+            gameBoard.style.display = "none";
+            finalScore.style.display = "block";
+            finalScore.textContent = `Your final score: ${totalScore} (${evaluatePerformance(totalScore)})`;
+        }
+
+        function evaluatePerformance(score) {
+            if (score >= 840) return "Excellent";
+            if (score >= 600) return "Good";
+            return "Keep Practicing!";
+        }
+    </script>
+</body>
+</html>
 
