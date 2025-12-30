@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>插入文章中部广告位</title>
+</head>
+<body>
+    <script>
+    // 此脚本用于在文章页面自动插入5个中部广告位
+    // 将此代码添加到每个文章页面的底部
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const articleContent = document.querySelector('.article-content');
+        if (!articleContent) return;
+
+        // 获取所有段落
+        const paragraphs = articleContent.querySelectorAll('p, h2, h3');
+        const totalParas = paragraphs.length;
+
+        if (totalParas < 5) return; // 文章太短，不插入广告
+
+        // 计算插入位置（均匀分布）
+        const positions = [
+            Math.floor(totalParas * 0.2),  // 20%
+            Math.floor(totalParas * 0.4),  // 40%
+            Math.floor(totalParas * 0.6),  // 60%
+            Math.floor(totalParas * 0.8),  // 80%
+            totalParas - 2                  // 接近末尾
+        ];
+
+        // 创建广告容器
+        const adIds = ['article_mid1', 'article_mid2', 'article_mid3', 'article_mid4', 'article_mid5'];
+
+        // 从后往前插入（避免位置变化）
+        positions.reverse().forEach((pos, index) => {
+            const adId = adIds[4 - index];
+            const adDiv = document.createElement('div');
+            adDiv.id = 'ad-container-' + adId;
+            adDiv.className = 'ad-container';
+            adDiv.style.cssText = 'display:none; margin: 30px auto; max-width: 728px; text-align: center; padding: 20px 0;';
+
+            // 在指定段落后插入
+            if (paragraphs[pos] && paragraphs[pos].parentNode) {
+                paragraphs[pos].parentNode.insertBefore(adDiv, paragraphs[pos].nextSibling);
+            }
+        });
+
+        // 触发广告加载
+        if (typeof loadAllPageAds === 'function') {
+            loadAllPageAds();
+        }
+    });
+    </script>
+</body>
+</html>

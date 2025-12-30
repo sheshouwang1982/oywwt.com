@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>广告管理系统 - oywwt.com</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background: #f5f5f5;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            padding: 30px;
+        }
+
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #4CAF50;
+        }
+
+        .ad-section {
+            margin-bottom: 40px;
+        }
+
+        .section-title {
+            font-size: 20px;
+            color: #555;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: #f9f9f9;
+            border-left: 4px solid #4CAF50;
+        }
+
+        .ad-slot {
+            border: 2px dashed #ddd;
+            border-radius: 6px;
+            padding: 20px;
+            margin-bottom: 20px;
+            background: #fafafa;
+        }
+
+        .ad-slot-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .ad-slot-name {
+            font-weight: bold;
+            color: #333;
+            font-size: 16px;
+        }
+
+        .ad-status {
+            display: inline-block;
+            padding: 5px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .status-active {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .status-inactive {
+            background: #999;
+            color: white;
+        }
+
+        textarea {
+            width: 100%;
+            min-height: 120px;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            resize: vertical;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #4CAF50;
+        }
+
+        .button-group {
+            margin-top: 15px;
+            display: flex;
+            gap: 10px;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.3s;
+        }
+
+        .btn-save {
+            background: #4CAF50;
+            color: white;
+        }
+
+        .btn-save:hover {
+            background: #45a049;
+        }
+
+        .btn-clear {
+            background: #f44336;
+            color: white;
+        }
+
+        .btn-clear:hover {
+            background: #da190b;
+        }
+
+        .btn-preview {
+            background: #2196F3;
+            color: white;
+        }
+
+        .btn-preview:hover {
+            background: #0b7dda;
+        }
+
+        .save-all-btn {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            padding: 15px 30px;
+            background: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(76, 175, 80, 0.4);
+            transition: all 0.3s;
+        }
+
+        .save-all-btn:hover {
+            background: #45a049;
+            box-shadow: 0 6px 20px rgba(76, 175, 80, 0.6);
+        }
+
+        .success-message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #4CAF50;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 4px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+            display: none;
+            z-index: 1000;
+        }
+
+        .ad-preview {
+            margin-top: 10px;
+            padding: 15px;
+            background: white;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            min-height: 100px;
+        }
+
+        .helper-text {
+            font-size: 12px;
+            color: #999;
+            margin-top: 8px;
+        }
+
+        .tab-container {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #eee;
+        }
+
+        .tab {
+            padding: 12px 24px;
+            cursor: pointer;
+            border: none;
+            background: none;
+            font-size: 16px;
+            color: #666;
+            border-bottom: 3px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .tab.active {
+            color: #4CAF50;
+            border-bottom-color: #4CAF50;
+            font-weight: bold;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 广告管理系统</h1>
+
+        <div class="tab-container">
+            <button class="tab active" onclick="switchTab('article')">文章页面广告</button>
+            <button class="tab" onclick="switchTab('home')">首页广告</button>
+        </div>
+
+        <!-- 文章页面广告 -->
+        <div id="article-tab" class="tab-content active">
+            <div class="ad-section">
+                <div class="section-title">📍 文章页面广告位 (共7个)</div>
+
+                <!-- 顶部广告 -->
+                <div class="ad-slot">
+                    <div class="ad-slot-header">
+                        <span class="ad-slot-name">🔝 顶部广告 (article_top)</span>
+                        <span class="ad-status status-inactive" id="status-article_top">未激活</span>
+                    </div>
+                    <textarea id="ad-article_top" placeholder="在这里粘贴广告代码...&#10;例如：Google AdSense、百度联盟等广告代码"></textarea>
+                    <div class="helper-text">💡 显示位置：文章标题下方</div>
+                    <div class="button-group">
+                        <button class="btn-save" onclick="saveAd('article_top')">保存</button>
+                        <button class="btn-clear" onclick="clearAd('article_top')">清空</button>
+                        <button class="btn-preview" onclick="previewAd('article_top')">预览</button>
+                    </div>
+                    <div id="preview-article_top" class="ad-preview" style="display:none;"></div>
+                </div>
+
+                <!-- 文章中部广告位1 -->
+                <div class="ad-slot">
+                    <div class="ad-slot-header">
+                        <span class="ad-slot-name">📝 文章中部广告位 1 (article_mid1)</span>
+                        <span class="ad-status status-inactive" id="status-article_mid1">未激活</span>
+                    </div>
+                    <textarea id="ad-article_mid1" placeholder="在这里粘贴广告代码..."></textarea>
+                    <div class="helper-text">💡 显示位置：文章内容前20%处</div>
+                    <div class="button-group">
+                        <button class="btn-save" onclick="saveAd('article_mid1')">保存</button>
+                        <button class="btn-clear" onclick="clearAd('article_mid1')">清空</button>
+                        <button class="btn-preview" onclick="previewAd('article_mid1')">预览</button>
+                    </div>
+                    <div id="preview-article_mid1" class="ad-preview" style="display:none;"></div>
+                </div>
+
+                <!-- 文章中部广告位2 -->
+                <div class="ad-slot">
+                    <div class="ad-slot-header">
+                        <span class="ad-slot-name">📝 文章中部广告位 2 (article_mid2)</span>
+                        <span class="ad-status status-inactive" id="status-article_mid2">未激活</span>
+                    </div>
+                    <textarea id="ad-article_mid2" placeholder="在这里粘贴广告代码..."></textarea>
+                    <div class="helper-text">💡 显示位置：文章内容前40%处</div>
+                    <div class="button-group">
+                        <button class="btn-save" onclick="saveAd('article_mid2')">保存</button>
+                        <button class="btn-clear" onclick="clearAd('article_mid2')">清空</button>
+                        <button class="btn-preview" onclick="previewAd('article_mid2')">预览</button>
+                    </div>
+                    <div id="preview-article_mid2" class="ad-preview" style="display:none;"></div>
+                </div>
+
+                <!-- 文章中部广告位3 -->
+                <div class="ad-slot">
+                    <div class="ad-slot-header">
+                        <span class="ad-slot-name">📝 文章中部广告位 3 (article_mid3)</span>
+                        <span class="ad-status status-inactive" id="status-article_mid3">未激活</span>
+                    </div>
+                    <textarea id="ad-article_mid3" placeholder="在这里粘贴广告代码..."></textarea>
+                    <div class="helper-text">💡 显示位置：文章内容前60%处</div>
+                    <div class="button-group">
+                        <button class="btn-save" onclick="saveAd('article_mid3')">保存</button>
+                        <button class="btn-clear" onclick="clearAd('article_mid3')">清空</button>
+                        <button class="btn-preview" onclick="previewAd('article_mid3')">预览</button>
+                    </div>
+                    <div id="preview-article_mid3" class="ad-preview" style="display:none;"></div>
+                </div>
+
+                <!-- 文章中部广告位4 -->
+                <div class="ad-slot">
+                    <div class="ad-slot-header">
+                        <span class="ad-slot-name">📝 文章中部广告位 4 (article_mid4)</span>
+                        <span class="ad-status status-inactive" id="status-article_mid4">未激活</span>
+                    </div>
+                    <textarea id="ad-article_mid4" placeholder="在这里粘贴广告代码..."></textarea>
+                    <div class="helper-text">💡 显示位置：文章内容前80%处</div>
+                    <div class="button-group">
+                        <button class="btn-save" onclick="saveAd('article_mid4')">保存</button>
+                        <button class="btn-clear" onclick="clearAd('article_mid4')">清空</button>
+                        <button class="btn-preview" onclick="previewAd('article_mid4')">预览</button>
+                    </div>
+                    <div id="preview-article_mid4" class="ad-preview" style="display:none;"></div>
+                </div>
+
+                <!-- 文章中部广告位5 -->
+                <div class="ad-slot">
+                    <div class="ad-slot-header">
+                        <span class="ad-slot-name">📝 文章中部广告位 5 (article_mid5)</span>
+                        <span class="ad-status status-inactive" id="status-article_mid5">未激活</span>
+                    </div>
+                    <textarea id="ad-article_mid5" placeholder="在这里粘贴广告代码..."></textarea>
+                    <div class="helper-text">💡 显示位置：文章内容末尾前</div>
+                    <div class="button-group">
+                        <button class="btn-save" onclick="saveAd('article_mid5')">保存</button>
+                        <button class="btn-clear" onclick="clearAd('article_mid5')">清空</button>
+                        <button class="btn-preview" onclick="previewAd('article_mid5')">预览</button>
+                    </div>
+                    <div id="preview-article_mid5" class="ad-preview" style="display:none;"></div>
+                </div>
+
+                <!-- 底部广告 -->
+                <div class="ad-slot">
+                    <div class="ad-slot-header">
+                        <span class="ad-slot-name">⬇️ 底部广告 (article_bottom)</span>
+                        <span class="ad-status status-inactive" id="status-article_bottom">未激活</span>
+                    </div>
+                    <textarea id="ad-article_bottom" placeholder="在这里粘贴广告代码..."></textarea>
+                    <div class="helper-text">💡 显示位置：文章内容结束后，Footer之前</div>
+                    <div class="button-group">
+                        <button class="btn-save" onclick="saveAd('article_bottom')">保存</button>
+                        <button class="btn-clear" onclick="clearAd('article_bottom')">清空</button>
+                        <button class="btn-preview" onclick="previewAd('article_bottom')">预览</button>
+                    </div>
+                    <div id="preview-article_bottom" class="ad-preview" style="display:none;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 首页广告 -->
+        <div id="home-tab" class="tab-content">
+            <div class="ad-section">
+                <div class="section-title">📍 首页广告位 (共3个)</div>
+
+                <!-- 首页顶部广告 -->
+                <div class="ad-slot">
+                    <div class="ad-slot-header">
+                        <span class="ad-slot-name">🔝 首页顶部广告 (home_top)</span>
+                        <span class="ad-status status-inactive" id="status-home_top">未激活</span>
+                    </div>
+                    <textarea id="ad-home_top" placeholder="在这里粘贴广告代码..."></textarea>
+                    <div class="helper-text">💡 显示位置：首页顶部，Featured stories之前</div>
+                    <div class="button-group">
+                        <button class="btn-save" onclick="saveAd('home_top')">保存</button>
+                        <button class="btn-clear" onclick="clearAd('home_top')">清空</button>
+                        <button class="btn-preview" onclick="previewAd('home_top')">预览</button>
+                    </div>
+                    <div id="preview-home_top" class="ad-preview" style="display:none;"></div>
+                </div>
+
+                <!-- 首页中部广告 -->
+                <div class="ad-slot">
+                    <div class="ad-slot-header">
+                        <span class="ad-slot-name">📝 首页中部广告 (home_middle)</span>
+                        <span class="ad-status status-inactive" id="status-home_middle">未激活</span>
+                    </div>
+                    <textarea id="ad-home_middle" placeholder="在这里粘贴广告代码..."></textarea>
+                    <div class="helper-text">💡 显示位置：Featured stories 和 Trending now 之间</div>
+                    <div class="button-group">
+                        <button class="btn-save" onclick="saveAd('home_middle')">保存</button>
+                        <button class="btn-clear" onclick="clearAd('home_middle')">清空</button>
+                        <button class="btn-preview" onclick="previewAd('home_middle')">预览</button>
+                    </div>
+                    <div id="preview-home_middle" class="ad-preview" style="display:none;"></div>
+                </div>
+
+                <!-- 首页底部广告 -->
+                <div class="ad-slot">
+                    <div class="ad-slot-header">
+                        <span class="ad-slot-name">⬇️ 首页底部广告 (home_bottom)</span>
+                        <span class="ad-status status-inactive" id="status-home_bottom">未激活</span>
+                    </div>
+                    <textarea id="ad-home_bottom" placeholder="在这里粘贴广告代码..."></textarea>
+                    <div class="helper-text">💡 显示位置：页面底部，Footer之前</div>
+                    <div class="button-group">
+                        <button class="btn-save" onclick="saveAd('home_bottom')">保存</button>
+                        <button class="btn-clear" onclick="clearAd('home_bottom')">清空</button>
+                        <button class="btn-preview" onclick="previewAd('home_bottom')">预览</button>
+                    </div>
+                    <div id="preview-home_bottom" class="ad-preview" style="display:none;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button class="save-all-btn" onclick="saveAll()">💾 保存所有广告</button>
+    <div class="success-message" id="successMsg">✅ 保存成功！</div>
+
+    <script src="ad-manager.js"></script>
+</body>
+</html>
